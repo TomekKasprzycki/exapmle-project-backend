@@ -47,7 +47,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/edit")
-    public UserDto editUser(@RequestParam UserDto userDto, HttpServletResponse response) {
+    public UserDto editUser(@RequestBody UserDto userDto, HttpServletResponse response) {
 
         final String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         UserDto newUserDto = new UserDto();
@@ -76,7 +76,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/editByAdmin")
-    public UserDto editUserByAdmin(@RequestParam UserDto userDto, HttpServletResponse response) {
+    public UserDto editUserByAdmin(@RequestBody UserDto userDto, HttpServletResponse response) {
 
         UserDto newUserDto = new UserDto();
 
@@ -126,6 +126,22 @@ public class UserController {
         } else {
             response.setHeader("ERROR", "USER NOT FOUND");
         }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/delete")
+    public void deleteUser(@RequestParam Long id, HttpServletResponse response) {
+
+        Optional<User> optionalUser = userService.findUserById(id);
+
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            userService.deleteUser(user);
+        }
+
+        response.setStatus(404);
+        response.setHeader("ERROR", "Something went wrong...");
+
     }
 
     @PostMapping("/anonymous/checkName")

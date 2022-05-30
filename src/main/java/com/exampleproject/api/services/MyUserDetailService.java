@@ -29,10 +29,12 @@ public class MyUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Optional optional = userService.findUserByEmail(email);
-        if(optional.isPresent()) {
-            User user = optional.get();
+        User user;
+        Optional<User> optional = userService.findUserByEmail(email);
+        if(optional.isEmpty()) {
+            return null;
         }
+            user = optional.get();
         boolean enabled = true;
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;

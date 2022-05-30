@@ -14,7 +14,7 @@
     <name>neighborhood-library</name>
     <description>Neighborhood libraty backend</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>12</java.version>
     </properties>
     <dependencies>
         <dependency>

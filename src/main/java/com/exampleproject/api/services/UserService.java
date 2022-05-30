@@ -54,8 +54,9 @@ public class UserService {
         long millis = System.currentTimeMillis();
         if (userValidator.isTheUserValid(userDto)) {
             User user = userDtoConverter.convertFromDto(userDto);
+            user.setPassword(userDto.getPassword());
             user.setCreated(new Date(millis));
-            user.setRole(roleService.getRole(3L).get());
+            user.setRole(roleService.getRole(1L).get());
 
             VerificationToken verificationToken = verificationTokenService.createToken();
 
@@ -68,7 +69,7 @@ public class UserService {
                 verificationTokenService.save(verificationToken);
 
                 String emailBody = "<p>Zakończ rejestrację klikając w poniższy link: <p><br/>" +
-                        "<a href='http://localhost:8081/api/authentication/anonymous/confirm?token="
+                        "<a href='http://localhost:8080/api/authentication/anonymous/confirm?token="
                         + verificationToken.getToken() + "' >WERYFIKACJA KONTA</a>";
                 mailingService.sendMail(user.getEmail(), "Weryfikacja użytkownika", emailBody, true);
                 return true;
@@ -131,7 +132,7 @@ public class UserService {
         user.setVerificationToken(verificationToken);
 
         String emailBody = "<p>Otrzymaliśmy prośbę o zresetowanie hasła do Twojego konta. Aby zresetować hasło kliknij na poniższy link:</p><br/><br/>" +
-                "<a href='http://localhost:8081/api/authentication/anonymous/confirmPasswordRecovery?token="
+                "<a href='http://localhost:8080/api/authentication/anonymous/confirmPasswordRecovery?token="
                 + verificationToken.getToken() + "?email=" + email + "' >ZRESETUJ MOJE HASŁO</a><br/><br/>" +
                 "Jeśli prośba nie była wysłana przez Ciebie poinformuje nas o tym wysyłając mail na adres: admin@hipotrofia.info";
         try {
@@ -198,6 +199,33 @@ public class UserService {
             save(user);
         }
         return true;
+    }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
+    }
+
+    public boolean verifyToken(String token) {
+
+        long millis = System.currentTimeMillis();
+        Date now = new Date(millis);
+        boolean result = false;
+
+        Optional<VerificationToken> optionalVerificationToken = verificationTokenService.getByToken(token);
+
+        if(optionalVerificationToken.isEmpty()) { return false; }
+
+            VerificationToken verificationToken = optionalVerificationToken.get();
+            final User user = verificationToken.getUser();
+            if (now.before(user.getVerificationToken().getExpirationDate()) && verificationToken.isActive()) {
+                user.setActive(true);
+                save(user);
+                verificationToken.setActive(false);
+                verificationTokenService.save(verificationToken);
+                result = true;
+            }
+
+        return result;
     }
 
 }

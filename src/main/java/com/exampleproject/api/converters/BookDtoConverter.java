@@ -3,7 +3,6 @@ package com.exampleproject.api.converters;
 import com.exampleproject.api.dto.BookDto;
 import com.exampleproject.api.model.Book;
 import com.exampleproject.api.model.BookScore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
