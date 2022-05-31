@@ -13,7 +13,7 @@ public class AuthorDtoConverter {
     public AuthorDto convertToDto(Author author) {
 
         AuthorDto authorDto = new AuthorDto();
-        author.setId(author.getId());
+        authorDto.setId(author.getId());
         authorDto.setFirstName(author.getFirstName());
         authorDto.setSecondName(author.getSecondName());
         authorDto.setLastName(author.getLastName());

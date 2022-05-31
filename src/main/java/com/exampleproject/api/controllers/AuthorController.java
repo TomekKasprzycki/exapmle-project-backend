@@ -21,13 +21,15 @@ public class AuthorController {
     private final AuthorDtoConverter authorDtoConverter;
     private final BookService bookService;
 
-    public AuthorController(AuthorService authorService, AuthorDtoConverter authorDtoConverter, BookService bookService){
+    public AuthorController(AuthorService authorService,
+                            AuthorDtoConverter authorDtoConverter,
+                            BookService bookService){
         this.authorService = authorService;
         this.authorDtoConverter = authorDtoConverter;
         this.bookService = bookService;
     }
 
-    @GetMapping("/getAllAuthors")
+    @GetMapping("/anonymous/getAllAuthors")
     public List<AuthorDto> getAllAuthors(@RequestParam int limit,
                                          @RequestParam int offset,
                                          HttpServletResponse response){
@@ -59,7 +61,7 @@ public class AuthorController {
     @DeleteMapping("/deleteauthor")
     public void deleteAuthor(@RequestBody AuthorDto authorDto, HttpServletResponse response){
         Author author = authorDtoConverter.convertFromDto(authorDto);
-        if(bookService.areThereAnyBooksOfAuthor(author)) {
+        if(bookService.areThereAnyBooksOfAuthor(author.getId())) {
             response.setStatus(405);
             response.setHeader("ERROR","Author may not be deleted, because they has books...");
         } else {

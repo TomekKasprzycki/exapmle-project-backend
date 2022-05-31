@@ -22,12 +22,14 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query("select count(b) from Book b where b.category=:category")
     int findBooksWithCategory(@Param("category") Category category);
 
-    @Query("select b from Book b where b.authors=:author")
-    int countBookWithAuthor(Author author);
+    @Query(nativeQuery = true, value=
+            "select count(*) from book inner join book_authors on books_id = book.id inner join author " +
+                    "on authors_id = author.id where author.id=:authorId ")
+    int countBookWithAuthor(@Param("authorId") Long authorId);
 
     @Query(nativeQuery = true, value = "select * from neighborlibrary.book where book.user_id=:id limit :limit offset :offset")
     Optional<List<Book>> findAllUserBooksWithLimit(@Param("id") Long id, @Param("limit") int limit, @Param("offset") int offset);
 
-    @Query(nativeQuery = true, value = "select * from neighborlibrary.book where book.user_id not in(id) limit :limit offset :offset")
+    @Query(nativeQuery = true, value = "select * from neighborlibrary.book where book.user_id not in(:id) limit :limit offset :offset")
     Optional<List<Book>> findAllNotUserBooksWithLimit(@Param("id") Long id, @Param("limit") int limit, @Param("offset") int offset);
 }

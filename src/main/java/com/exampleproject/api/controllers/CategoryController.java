@@ -28,7 +28,7 @@ public class CategoryController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/anonymous/getAll")
     public List<CategoryDto> getAll(HttpServletResponse response) {
 
         Optional<List<Category>> optionalCategories = categoryService.getAll();

@@ -6,12 +6,15 @@ import com.exampleproject.api.model.Token;
 import com.exampleproject.api.model.User;
 import com.exampleproject.api.services.TokenService;
 import com.exampleproject.api.services.UserService;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 
 @RestController
@@ -53,7 +56,78 @@ public class AuthenticationController {
             return new RedirectView("http://localhost:3000/login");
         } else {
             response.setHeader("STATUS", "DENIED");
-            return new RedirectView("http://localhost:3000/"); //maybe we should have a page which inform user about that error
+            return new RedirectView("http://localhost:3000/");
+        }
+    }
+
+    @PostMapping("/anonymous/login")
+    public String login(@RequestBody UserDto userDto, HttpServletResponse response) {
+
+        Optional<User> optional = userService.findUserByEmail(userDto.getLogin());
+        User user;
+
+        if (optional.isEmpty()) {
+            response.setStatus(404);
+            response.setHeader("ERROR", "Invalid username or password");
+            return null;
+        }
+
+        user = optional.get();
+        String token = tokenService.createToken(user);
+        Token createdToken;
+
+        if (user.isActive() && user.checkPassword(user.getPassword())) {
+
+            Optional<Token> optionalToken = tokenService.findByUser(user);
+            if (optionalToken.isEmpty()) {
+
+                createdToken = new Token();
+                createdToken.setToken(token);
+                createdToken.setActive(true);
+                createdToken.setUser(user);
+                createdToken = tokenService.addToken(createdToken);
+                user.setToken(createdToken);
+                userService.save(user);
+            } else {
+                createdToken = optionalToken.get();
+                createdToken.setToken(token);
+                createdToken.setActive(true);
+            }
+            tokenService.addToken(createdToken);
+
+
+            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
+        }
+
+        return token;
+    }
+
+    @PostMapping("/anonymous/registration")
+    public void registration(@RequestBody UserDto userDto, HttpServletResponse response) {
+
+        if(userDto.getId() == 0) {
+            userDto.setId(null);
+        }
+
+        if (userService.registerUser(userDto)) {
+            response.setStatus(200);
+            response.setHeader("Status", "REGISTERED");
+        } else {
+            response.setHeader("Status", "DENIED");
+        }
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response, HttpServletRequest request) {
+        String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
+        Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
+        if (optionalToken.isPresent()) {
+            Token token = optionalToken.get();
+            token.setActive(false);
+            tokenService.addToken(token);
+            response.setHeader("Status", "LOGOUT");
+        } else {
+            response.setHeader("Status", "DENIED");
         }
     }
 

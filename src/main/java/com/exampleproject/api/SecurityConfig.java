@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -31,10 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public SecurityConfig(UserService userService,
                           MyUserDetailService myUserDetailService,
-                          TokenService tokenService){
-        this.myUserDetailService=myUserDetailService;
-        this.tokenService=tokenService;
-        this.userService=userService;
+                          TokenService tokenService) {
+        this.myUserDetailService = myUserDetailService;
+        this.tokenService = tokenService;
+        this.userService = userService;
     }
 
     @Override
@@ -50,6 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(authorizeRequests -> {
                     authorizeRequests
                             .antMatchers(HttpMethod.GET, "/api/*/anonymous/**").permitAll()
+                            .antMatchers(HttpMethod.POST, "/api/authentication/anonymous/*").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenService, userService))
@@ -59,7 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

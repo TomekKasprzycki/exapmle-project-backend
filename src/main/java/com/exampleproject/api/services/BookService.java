@@ -36,8 +36,8 @@ public class BookService {
         return bookRepository.findBooksWithCategory(category) != 0;
     }
 
-    public boolean areThereAnyBooksOfAuthor(Author author) {
-        return bookRepository.countBookWithAuthor(author) != 0;
+    public boolean areThereAnyBooksOfAuthor(Long id) {
+        return bookRepository.countBookWithAuthor(id) != 0;
     }
 
     public Optional<List<Book>> getAllUserBooksWithLimit(Long id, int limit, int offset) {

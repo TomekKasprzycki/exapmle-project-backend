@@ -45,16 +45,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
         UsernamePasswordAuthenticationToken authenticationToken = null;
         UserDto userDto = parseUserDto(request);
+        if(userDto.getId() == 0) {
+            userDto.setId(null);
+        }
 
         switch (header) {
-            case "Registration":
-
-                if (userService.registerUser(userDto)) {
-                    response.setHeader("Status", "REGISTERED");
-                } else {
-                    response.setHeader("Status", "DENIED");
-                }
-                break;
+//            case "Registration":
+//
+//                if (userService.registerUser(userDto)) {
+//                    response.setStatus(200);
+//                    response.setHeader("Status", "REGISTERED");
+//                } else {
+//                    response.setHeader("Status", "DENIED");
+//                }
+//                break;
 
             case "Login":
 
