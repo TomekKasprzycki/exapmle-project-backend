@@ -39,17 +39,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-        String header = request.getHeader("TYPE");
-        if (header == null) {
-            return null;
-        }
+//        String header = request.getHeader("TYPE");
+//        if (header == null) {
+//            return null;
+//        }
         UsernamePasswordAuthenticationToken authenticationToken = null;
-        UserDto userDto = parseUserDto(request);
-        if(userDto.getId() == 0) {
-            userDto.setId(null);
-        }
-
-        switch (header) {
+//        UserDto userDto = parseUserDto(request);
+//        if(userDto.getId() == 0) {
+//            userDto.setId(null);
+//        }
+//
+//        switch (header) {
 //            case "Registration":
 //
 //                if (userService.registerUser(userDto)) {
@@ -59,38 +59,38 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //                    response.setHeader("Status", "DENIED");
 //                }
 //                break;
-
-            case "Login":
-
-                Optional<User> optional = userService.findUserByEmail(userDto.getLogin());
-                User user;
-
-                if (optional.isPresent()) {
-                    user = optional.get();
-                } else {
-                    break;
-                }
-
-                if (user.isActive() && user.checkPassword(userDto.getPassword())) {
-                    authenticationToken =
-                            new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword());
-                }
-
-                break;
-
-            case "Logout":
-                String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
-                Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
-                if (optionalToken.isPresent()) {
-                    Token token = optionalToken.get();
-                    token.setActive(false);
-                    tokenService.addToken(token);
-                    response.setHeader("Status", "LOGOUT");
-                } else {
-                    response.setHeader("Status", "DENIED");
-                }
-                break;
-        }
+//
+//            case "Login":
+//
+//                Optional<User> optional = userService.findUserByEmail(userDto.getLogin());
+//                User user;
+//
+//                if (optional.isPresent()) {
+//                    user = optional.get();
+//                } else {
+//                    break;
+//                }
+//
+//                if (user.isActive() && user.checkPassword(userDto.getPassword())) {
+//                    authenticationToken =
+//                            new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword());
+//                }
+//
+//                break;
+//
+//            case "Logout":
+//                String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
+//                Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
+//                if (optionalToken.isPresent()) {
+//                    Token token = optionalToken.get();
+//                    token.setActive(false);
+//                    tokenService.addToken(token);
+//                    response.setHeader("Status", "LOGOUT");
+//                } else {
+//                    response.setHeader("Status", "DENIED");
+//                }
+//                break;
+//        }
 
         return authenticationManager.authenticate(authenticationToken);
     }
