@@ -38,6 +38,7 @@ public class TokenService {
 
         return Jwts.builder()
                 .setSubject(user.getEmail())
+                .claim("id",user.getId())
                 .claim("name", user.getName())
                 .claim("email", user.getEmail())
                 .claim("role", user.getRole().getName())

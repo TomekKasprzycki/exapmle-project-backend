@@ -8,8 +8,8 @@ import java.util.Date;
 public class LendingRegisterDto {
 
     private Long id;
-    private UserDto user;
-    private BookDto book;
+    private UserDto userDto;
+    private BookDto bookDto;
     private Date dateOfLend;
     private Date dateOfReturn;
 

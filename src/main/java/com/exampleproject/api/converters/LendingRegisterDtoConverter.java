@@ -23,8 +23,8 @@ public class LendingRegisterDtoConverter {
     public LendingRegisterDto convertToDto(LendingRegister lendingRegister) {
         LendingRegisterDto lendingRegisterDto = new LendingRegisterDto();
         lendingRegisterDto.setId(lendingRegister.getId());
-        lendingRegisterDto.setBook(bookDtoConverter.convertToDto(lendingRegister.getBook()));
-        lendingRegisterDto.setUser(userDtoConverter.convertToDto(lendingRegister.getUser()));
+        lendingRegisterDto.setBookDto(bookDtoConverter.convertToDto(lendingRegister.getBook()));
+        lendingRegisterDto.setUserDto(userDtoConverter.convertToDto(lendingRegister.getUser()));
         lendingRegisterDto.setDateOfLend(lendingRegister.getDateOfLend());
         lendingRegisterDto.setDateOfReturn(lendingRegister.getDateOfReturn());
         return lendingRegisterDto;
@@ -33,14 +33,14 @@ public class LendingRegisterDtoConverter {
     public LendingRegister convertFromDto(LendingRegisterDto lendingRegisterDto) {
         LendingRegister lendingRegister = new LendingRegister();
         lendingRegister.setId(lendingRegisterDto.getId());
-        lendingRegister.setBook(bookDtoConverter.convertFromDto(lendingRegisterDto.getBook()));
-        lendingRegister.setUser(userDtoConverter.convertFromDto(lendingRegisterDto.getUser()));
+        lendingRegister.setBook(bookDtoConverter.convertFromDto(lendingRegisterDto.getBookDto()));
+        lendingRegister.setUser(userDtoConverter.convertFromDto(lendingRegisterDto.getUserDto()));
         lendingRegister.setDateOfLend(lendingRegisterDto.getDateOfLend());
         lendingRegister.setDateOfReturn(lendingRegisterDto.getDateOfReturn());
         return lendingRegister;
     }
 
-    public List<LendingRegisterDto> lendingRegisterDtoList(List<LendingRegister> lendingRegisterList) {
+    public List<LendingRegisterDto> convertToDto(List<LendingRegister> lendingRegisterList) {
         return lendingRegisterList.stream().map(this::convertToDto).collect(Collectors.toList());
     }
 

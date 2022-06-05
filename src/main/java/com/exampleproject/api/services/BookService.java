@@ -47,4 +47,28 @@ public class BookService {
     public Optional<List<Book>> getAllNotUserBooksWithLimit(Long id, int limit, int offset) {
         return bookRepository.findAllNotUserBooksWithLimit(id, limit, offset);
     }
+
+    public Optional<List<Book>> getBooksForLend(String login, int limit, int offset) {
+        return bookRepository.findAllNotLended(login, limit, offset);
+    }
+
+    public int countBooks() {
+        return bookRepository.countBooks();
+    }
+
+    public int countUserBooks(User user) {
+        return bookRepository.countAllUserBooks(user);
+    }
+
+    public int countOtherBooks(User user) {
+        return bookRepository.countOtherBooks(user);
+    }
+
+    public int countBooksForLend(User user) {
+        return bookRepository.countBooksForLend(user);
+    }
+
+    public Optional<Book> getBookById(Long id) {
+        return bookRepository.findById(id);
+    }
 }

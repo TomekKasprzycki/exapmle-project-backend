@@ -10,6 +10,7 @@ import java.util.Date;
 public class LendingRegister {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @ManyToOne
     @JoinColumn(name="book_id", referencedColumnName = "id")

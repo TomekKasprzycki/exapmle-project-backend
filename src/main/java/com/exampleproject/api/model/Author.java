@@ -1,10 +1,9 @@
 package com.exampleproject.api.model;
 
 import lombok.Data;
+import org.hibernate.annotations.Generated;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -12,6 +11,7 @@ import java.util.List;
 public class Author {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String firstName;
     private String secondName;

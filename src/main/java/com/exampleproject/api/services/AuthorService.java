@@ -55,8 +55,8 @@ public class AuthorService {
         }
     }
 
-    public Optional<List<Author>> getAllAuthors(int limit, int offset) {
-        return authorRepository.findAllAuthors(limit, offset);
+    public Optional<List<Author>> getAllAuthors() {
+        return authorRepository.findAllAuthors();
     }
 
     public void addAuthor(Author author) {

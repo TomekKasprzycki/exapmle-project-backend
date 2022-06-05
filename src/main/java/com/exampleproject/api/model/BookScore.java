@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class BookScore {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(columnDefinition = "varchar(2000)")
     private String opinion;

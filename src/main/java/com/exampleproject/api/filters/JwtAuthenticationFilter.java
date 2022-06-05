@@ -39,17 +39,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
-//        String header = request.getHeader("TYPE");
-//        if (header == null) {
-//            return null;
-//        }
+        String header = request.getHeader("TYPE");
+        if (header == null) {
+            return null;
+        }
         UsernamePasswordAuthenticationToken authenticationToken = null;
-//        UserDto userDto = parseUserDto(request);
-//        if(userDto.getId() == 0) {
-//            userDto.setId(null);
-//        }
-//
-//        switch (header) {
+        UserDto userDto = parseUserDto(request);
+        if(userDto.getId() == 0) {
+            userDto.setId(null);
+        }
+
+        switch (header) {
 //            case "Registration":
 //
 //                if (userService.registerUser(userDto)) {
@@ -59,25 +59,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //                    response.setHeader("Status", "DENIED");
 //                }
 //                break;
-//
-//            case "Login":
-//
-//                Optional<User> optional = userService.findUserByEmail(userDto.getLogin());
-//                User user;
-//
-//                if (optional.isPresent()) {
-//                    user = optional.get();
-//                } else {
-//                    break;
-//                }
-//
-//                if (user.isActive() && user.checkPassword(userDto.getPassword())) {
-//                    authenticationToken =
-//                            new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword());
-//                }
-//
-//                break;
-//
+
+            case "Login":
+
+                Optional<User> optional = userService.findUserByEmail(userDto.getLogin());
+                User user;
+
+                if (optional.isPresent()) {
+                    user = optional.get();
+                } else {
+                    break;
+                }
+
+                if (user.isActive() && user.checkPassword(userDto.getPassword())) {
+                    authenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDto.getLogin(), userDto.getPassword());
+                }
+
+                break;
+
 //            case "Logout":
 //                String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
 //                Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
@@ -90,48 +90,48 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 //                    response.setHeader("Status", "DENIED");
 //                }
 //                break;
-//        }
+        }
 
         return authenticationManager.authenticate(authenticationToken);
     }
 
-    @SneakyThrows
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain filterChain, Authentication authentication) {
-
-
-        final org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-
-        Optional<User> optionalUser = userService.findUserByEmail(principal.getUsername());
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            String token = tokenService.createToken(user);
-            Token createdToken;
-
-            Optional<Token> optionalToken = tokenService.findByUser(user);
-            if (optionalToken.isEmpty()) {
-
-                createdToken = new Token();
-                createdToken.setToken(token);
-                createdToken.setActive(true);
-                createdToken.setUser(user);
-                createdToken = tokenService.addToken(createdToken);
-                user.setToken(createdToken);
-                userService.save(user);
-            } else {
-                createdToken = optionalToken.get();
-                createdToken.setToken(token);
-                createdToken.setActive(true);
-            }
-            tokenService.addToken(createdToken);
-
-
-            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
-        }
-    }
-
-
+//    @SneakyThrows
+//    @Override
+//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+//                                            FilterChain filterChain, Authentication authentication) {
+//
+//
+//        final org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+//
+//        Optional<User> optionalUser = userService.findUserByEmail(principal.getUsername());
+//        if (optionalUser.isPresent()) {
+//            User user = optionalUser.get();
+//            String token = tokenService.createToken(user);
+//            Token createdToken;
+//
+//            Optional<Token> optionalToken = tokenService.findByUser(user);
+//            if (optionalToken.isEmpty()) {
+//
+//                createdToken = new Token();
+//                createdToken.setToken(token);
+//                createdToken.setActive(true);
+//                createdToken.setUser(user);
+//                createdToken = tokenService.addToken(createdToken);
+//                user.setToken(createdToken);
+//                userService.save(user);
+//            } else {
+//                createdToken = optionalToken.get();
+//                createdToken.setToken(token);
+//                createdToken.setActive(true);
+//            }
+//            tokenService.addToken(createdToken);
+//
+//
+//            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
+//        }
+//    }
+//
+//
     private UserDto parseUserDto(HttpServletRequest request) {
         if (request.getMethod().equalsIgnoreCase("post")) {
             try {

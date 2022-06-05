@@ -2,6 +2,7 @@ package com.exampleproject.api.services;
 
 import com.exampleproject.api.converters.UserDtoConverter;
 import com.exampleproject.api.dto.UserDto;
+import com.exampleproject.api.model.Book;
 import com.exampleproject.api.model.User;
 import com.exampleproject.api.model.VerificationToken;
 import com.exampleproject.api.repositories.UserRepository;

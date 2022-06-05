@@ -39,7 +39,7 @@ public class User {
     private List<MailingList> mailingList;
     @OneToOne(fetch = FetchType.EAGER)
     private VerificationToken verificationToken;
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Book> books;
     @OneToMany(mappedBy = "user")
     private List<LendingRegister> lendingRegister;

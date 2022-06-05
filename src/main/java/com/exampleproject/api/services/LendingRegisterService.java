@@ -20,4 +20,12 @@ public class LendingRegisterService {
     public Optional<List<LendingRegister>> getRegisterForUser(User user) {
         return lendingRegisterRepository.findAllByUser(user);
     }
+
+    public void saveNewRegister(LendingRegister newLend) {
+        lendingRegisterRepository.save(newLend);
+    }
+
+    public LendingRegister getRegister(Long id) {
+        return lendingRegisterRepository.getOne(id);
+    }
 }

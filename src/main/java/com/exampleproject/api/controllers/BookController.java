@@ -50,6 +50,12 @@ public class BookController {
         return bookDtoConverter.convertToDto(books);
     }
 
+    @GetMapping("/anonymous/showbooksnumber")
+    public int showBookNumber() {
+
+        return bookService.countBooks();
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     @GetMapping("/mybooks")
     public List<BookDto> getMyBooks(@RequestParam int limit, @RequestParam int offset, HttpServletResponse response) {
@@ -60,7 +66,8 @@ public class BookController {
             User user = optionalUser.get();
             Optional<List<Book>> optionalBooks = bookService.getAllUserBooksWithLimit(user.getId(), limit, offset);
             if(optionalBooks.isPresent()){
-                return bookDtoConverter.convertToDto(optionalBooks.get());
+                List<Book> bookList = optionalBooks.get();
+                return bookDtoConverter.convertToDto(bookList);
             } else {
                 response.setStatus(404);
                 response.setHeader("INFO","Ups, Your books are missing...");
@@ -68,6 +75,19 @@ public class BookController {
 
         }
         return new ArrayList<>();
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @GetMapping("/showuserbooksnumber")
+    public int showUserBookNumber() {
+
+        final String login = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        Optional<User> optionalUser = userService.findUserByEmail(login);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return bookService.countUserBooks(user);
+        }
+        return 0;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
@@ -90,13 +110,66 @@ public class BookController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @GetMapping("/showotherbooksnumber")
+    public int showOtherBookNumber() {
+
+        final String login = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        Optional<User> optionalUser = userService.findUserByEmail(login);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            return bookService.countOtherBooks(user);
+        }
+        return 0;
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @GetMapping("/booksforlend")
+    public List<BookDto> getBookForLend(@RequestParam int limit, @RequestParam int offset, HttpServletResponse response){
+
+        final String login = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        Optional<List<Book>> optionalBookList = bookService.getBooksForLend(login, limit, offset);
+
+        if (optionalBookList.isEmpty()) {
+            response.setStatus(404);
+            response.setHeader("ERROR", "Books are missing...");
+            return new ArrayList<>();
+        }
+
+        List<Book> books = optionalBookList.get();
+
+        return bookDtoConverter.convertToDto(books);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
+    @GetMapping("/showbooksforlendnumber")
+    public int showBookForLendNumber() {
+
+        final String login = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+
+        Optional<User> optionalUser = userService.findUserByEmail(login);
+        User user = new User();
+        if (optionalUser.isPresent()) {
+            user = optionalUser.get();
+        }
+        return bookService.countBooksForLend(user);
+
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     @PostMapping("/addbook")
     public void addBook(@RequestBody BookDto bookDto) {
 
+        bookDto.setId(null);
         Book book = bookDtoConverter.convertFromDto(bookDto);
-        bookService.saveBook(book);
-        authorService.addBookToAuthor(book);
-
+        Optional<User> optionalUser = userService.findUserByEmail(bookDto.getOwner().getLogin());
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            book.setOwner(user);
+            bookService.saveBook(book);
+            authorService.addBookToAuthor(book);
+        }
     }
 
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")

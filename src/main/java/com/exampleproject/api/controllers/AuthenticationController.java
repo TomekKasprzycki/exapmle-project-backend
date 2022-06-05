@@ -73,10 +73,12 @@ public class AuthenticationController {
         }
 
         user = optional.get();
-        String token = tokenService.createToken(user);
+        String token = null;
         Token createdToken;
 
-        if (user.isActive() && user.checkPassword(user.getPassword())) {
+        if (user.isActive() && user.checkPassword(userDto.getPassword())) {
+
+            token = tokenService.createToken(user);
 
             Optional<Token> optionalToken = tokenService.findByUser(user);
             if (optionalToken.isEmpty()) {
@@ -94,10 +96,10 @@ public class AuthenticationController {
                 createdToken.setActive(true);
             }
             tokenService.addToken(createdToken);
+        }
 
 
             response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
-        }
 
         return token;
     }
@@ -117,7 +119,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public void logout(HttpServletResponse response, HttpServletRequest request) {
         String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
         Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);

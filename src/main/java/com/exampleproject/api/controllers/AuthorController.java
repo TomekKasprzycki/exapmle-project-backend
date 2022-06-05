@@ -30,11 +30,9 @@ public class AuthorController {
     }
 
     @GetMapping("/anonymous/getAllAuthors")
-    public List<AuthorDto> getAllAuthors(@RequestParam int limit,
-                                         @RequestParam int offset,
-                                         HttpServletResponse response){
+    public List<AuthorDto> getAllAuthors(HttpServletResponse response){
 
-        Optional<List<Author>> optionalAuthors = authorService.getAllAuthors(limit, offset);
+        Optional<List<Author>> optionalAuthors = authorService.getAllAuthors();
         if(optionalAuthors.isEmpty()) {
             response.setStatus(404);
             response.setHeader("INFO", "There are no authors here...");

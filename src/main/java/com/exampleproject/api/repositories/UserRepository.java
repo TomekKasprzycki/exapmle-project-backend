@@ -1,5 +1,6 @@
 package com.exampleproject.api.repositories;
 
+import com.exampleproject.api.model.Book;
 import com.exampleproject.api.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
