@@ -1,7 +1,6 @@
 package com.exampleproject.api.model;
 
 import lombok.Data;
-import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import java.util.List;

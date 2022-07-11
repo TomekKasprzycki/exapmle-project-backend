@@ -50,15 +50,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         }
 
         switch (header) {
-//            case "Registration":
-//
-//                if (userService.registerUser(userDto)) {
-//                    response.setStatus(200);
-//                    response.setHeader("Status", "REGISTERED");
-//                } else {
-//                    response.setHeader("Status", "DENIED");
-//                }
-//                break;
+            case "Registration":
+
+                if (userService.registerUser(userDto)) {
+                    response.setStatus(200);
+                    response.setHeader("Status", "REGISTERED");
+                } else {
+                    response.setHeader("Status", "DENIED");
+                }
+                break;
 
             case "Login":
 
@@ -78,60 +78,60 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
                 break;
 
-//            case "Logout":
-//                String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
-//                Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
-//                if (optionalToken.isPresent()) {
-//                    Token token = optionalToken.get();
-//                    token.setActive(false);
-//                    tokenService.addToken(token);
-//                    response.setHeader("Status", "LOGOUT");
-//                } else {
-//                    response.setHeader("Status", "DENIED");
-//                }
-//                break;
+            case "Logout":
+                String tokenToDeactivation = request.getHeader("Authorization").replace("Bearer ", "");
+                Optional<Token> optionalToken = tokenService.findByToken(tokenToDeactivation);
+                if (optionalToken.isPresent()) {
+                    Token token = optionalToken.get();
+                    token.setActive(false);
+                    tokenService.addToken(token);
+                    response.setHeader("Status", "LOGOUT");
+                } else {
+                    response.setHeader("Status", "DENIED");
+                }
+                break;
         }
 
         return authenticationManager.authenticate(authenticationToken);
     }
 
-//    @SneakyThrows
-//    @Override
-//    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-//                                            FilterChain filterChain, Authentication authentication) {
-//
-//
-//        final org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
-//
-//        Optional<User> optionalUser = userService.findUserByEmail(principal.getUsername());
-//        if (optionalUser.isPresent()) {
-//            User user = optionalUser.get();
-//            String token = tokenService.createToken(user);
-//            Token createdToken;
-//
-//            Optional<Token> optionalToken = tokenService.findByUser(user);
-//            if (optionalToken.isEmpty()) {
-//
-//                createdToken = new Token();
-//                createdToken.setToken(token);
-//                createdToken.setActive(true);
-//                createdToken.setUser(user);
-//                createdToken = tokenService.addToken(createdToken);
-//                user.setToken(createdToken);
-//                userService.save(user);
-//            } else {
-//                createdToken = optionalToken.get();
-//                createdToken.setToken(token);
-//                createdToken.setActive(true);
-//            }
-//            tokenService.addToken(createdToken);
-//
-//
-//            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
-//        }
-//    }
-//
-//
+    @SneakyThrows
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                            FilterChain filterChain, Authentication authentication) {
+
+
+        final org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+
+        Optional<User> optionalUser = userService.findUserByEmail(principal.getUsername());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            String token = tokenService.createToken(user);
+            Token createdToken;
+
+            Optional<Token> optionalToken = tokenService.findByUser(user);
+            if (optionalToken.isEmpty()) {
+
+                createdToken = new Token();
+                createdToken.setToken(token);
+                createdToken.setActive(true);
+                createdToken.setUser(user);
+                createdToken = tokenService.addToken(createdToken);
+                user.setToken(createdToken);
+                userService.save(user);
+            } else {
+                createdToken = optionalToken.get();
+                createdToken.setToken(token);
+                createdToken.setActive(true);
+            }
+            tokenService.addToken(createdToken);
+
+
+            response.addHeader(SecurityConstants.TOKEN_HEADER, SecurityConstants.TOKEN_PREFIX + token);
+        }
+    }
+
+
     private UserDto parseUserDto(HttpServletRequest request) {
         if (request.getMethod().equalsIgnoreCase("post")) {
             try {
